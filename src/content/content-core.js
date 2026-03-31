@@ -11,22 +11,22 @@ let initCalled = false;
 const BRIDGE_SOURCE_CONTENT = 'cursor-toolbox-content';
 const BRIDGE_SOURCE_PAGE = 'cursor-toolbox-page-hook';
 
-const LAYOUT_TARGET_SELECTOR = 'div[ref="e170"], div.chat-sidebar, div.sidebar';
-const LAYOUT_FALLBACK_SELECTOR = 'div[role="region"], #main-content';
-const LAYOUT_AUTOCLICK_SELECTOR = 'button[ref="e176"], button.Toggle\\ Chat\\ Sidebar, button[title*="Toggle"], button[aria-label*="展开"], button[aria-label*="Expand"]';
-const CHAT_AUTOCLICK_SELECTOR = 'button[title="Expand Chat Sidebar"]';
+const LAYOUT_TARGET_SELECTOR = '.App, .MuiDrawer-root, div.flex.flex-col.h-full';
+const LAYOUT_FALLBACK_SELECTOR = '#root, div.MuiBox-root, div.w-full.h-full';
+const LAYOUT_AUTOCLICK_SELECTOR = 'button[aria-label*="展开"], button[aria-label*="Expand"], button[aria-label*="sidebar"], button[aria-label*="menu"]';
+const CHAT_AUTOCLICK_SELECTOR = 'button[aria-label*="sidebar"]';
 const SEND_BTN_SELECTORS = [
-  'button[data-slot="button"][type="submit"]',
-  'form button[type="submit"]',
-  'button[type="submit"]'
+  'button.mantine-ActionIcon-root[type="button"]',
+  'button[type="submit"]',
+  'button[data-disabled="true"] ~ button, button.mantine-ActionIcon-root'
 ];
-const TEXTAREA_SELECTOR = 'form textarea, textarea[placeholder*="message"], textarea[placeholder*="输入"], textarea[name*="message"]';
-const CHAT_VIEWPORT_SELECTOR = '[data-slot="scroll-area-viewport"], [data-radix-scroll-area-viewport], #main-content';
-const USER_MESSAGE_BUBBLE_SELECTOR = 'div[class*="rounded-lg"][class*="border"][class*="bg-muted/40"]';
-const USER_MESSAGE_TEXT_SELECTOR = '.w-full.overflow-hidden.break-words.text-foreground.text-sm';
+const TEXTAREA_SELECTOR = 'textarea#message-input, textarea[data-testid="message-input"], textarea[placeholder*="question"], textarea[placeholder*="输入"]';
+const CHAT_VIEWPORT_SELECTOR = '[data-testid="virtuoso-scroller"], [data-virtuoso-scroller], .overflow-hidden.h-full, #root';
+const USER_MESSAGE_BUBBLE_SELECTOR = 'div.group\\/message.msg-block, div[class*="msg-block"], div[data-index]';
+const USER_MESSAGE_TEXT_SELECTOR = '.msg-content, .break-words, div[class*="msg-content"]';
 const USER_MESSAGE_MARK_ATTR = 'data-tm-user-message-marked';
-const BUTTON_BASE_SELECTOR = 'button[data-slot="button"][type="button"]';
-const PROSE_CONTAINER_SELECTOR = '.prose, [class^="prose-"], [class*=" prose-"]';
+const BUTTON_BASE_SELECTOR = 'button[type="button"], button.mantine-ActionIcon-root';
+const PROSE_CONTAINER_SELECTOR = '.msg-content, .break-words, [class*="msg-content"], .prose, [class^="prose-"], [class*=" prose-"]';
 
 const MAX_AUTO_EXPAND_ATTEMPTS = 4;
 const RECENT_PROSE_SCAN_LIMIT = 6;
@@ -253,7 +253,7 @@ function getCurrentRoutePath() {
 
 function getRouteConversationId(routePath) {
   const pathOnly = String(routePath || '').split('?')[0].split('#')[0];
-  const match = pathOnly.match(/\/chat\/([^/]+)/i);
+  const match = pathOnly.match(/\/(?:chat|session)\/([^/]+)/i);
   if (!match || !match[1]) return null;
   return match[1];
 }

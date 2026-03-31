@@ -12,9 +12,11 @@ function resolveUserMessageTextContainer(bubble) {
   if (direct instanceof HTMLElement) return direct;
 
   const fallbackSelectors = [
+    '.msg-content',
+    '.break-words',
+    '[class*="break-words"]',
     '.w-full.overflow-hidden.break-words',
     '[class*="break-words"][class*="text-sm"]',
-    '[class*="break-words"]',
     '.whitespace-pre-wrap'
   ];
   for (const selector of fallbackSelectors) {
@@ -152,7 +154,8 @@ function collectMcpResultBubbleCandidates(root) {
 
     const bubble = node.closest(USER_MESSAGE_BUBBLE_SELECTOR)
       || node.closest('div[class*="rounded"][class*="border"]')
-      || node.closest('article, li, [data-message-id], [data-role]');
+      || node.closest('div[class*="msg-block"]')
+      || node.closest('article, li, [data-message-id], [data-role], [data-index]');
     if (!(bubble instanceof Element)) continue;
     if (!bubble.closest(CHAT_VIEWPORT_SELECTOR)) continue;
     candidates.add(bubble);
@@ -199,7 +202,7 @@ function clearUserMessageMarkers() {
   });
 }
 
-const CHAT_VIEWPORT_CANDIDATE_SELECTOR = '[data-slot="scroll-area-viewport"], [data-radix-scroll-area-viewport], #main-content';
+const CHAT_VIEWPORT_CANDIDATE_SELECTOR = '[data-testid="virtuoso-scroller"], [data-virtuoso-scroller], [data-slot="scroll-area-viewport"], [data-radix-scroll-area-viewport], #main-content, .overflow-hidden.h-full';
 const CHAT_SCROLLBAR_SELECTOR = '[data-slot="scroll-area-scrollbar"], [data-radix-scroll-area-scrollbar]';
 const CHAT_SCROLL_THUMB_SELECTOR = '[data-slot="scroll-area-thumb"], [data-radix-scroll-area-thumb]';
 
@@ -214,18 +217,18 @@ function collectChatViewportCandidates(root = null) {
     candidates.add(node);
   };
 
-  const messageRoots = scope.querySelectorAll('[aria-label="Chat messages"]');
+  const messageRoots = scope.querySelectorAll('[aria-label="Chat messages"], [data-testid="virtuoso-item-list"], [data-testid="virtuoso-scroller"]');
   for (const messageRoot of messageRoots) {
-    const viewport = messageRoot.closest(CHAT_VIEWPORT_CANDIDATE_SELECTOR);
+    const viewport = messageRoot.closest(CHAT_VIEWPORT_CANDIDATE_SELECTOR) || messageRoot;
     addCandidate(viewport);
   }
 
-  if (scope.matches('#main-content') && scope.querySelector('[aria-label="Chat messages"]')) {
+  if (scope.matches('#main-content') && scope.querySelector('[aria-label="Chat messages"], [data-testid="virtuoso-item-list"]')) {
     addCandidate(scope);
   }
 
-  const nestedMain = scope.querySelector('#main-content');
-  if (nestedMain instanceof HTMLElement && nestedMain.querySelector('[aria-label="Chat messages"]')) {
+  const nestedMain = scope.querySelector('#main-content, #root');
+  if (nestedMain instanceof HTMLElement && nestedMain.querySelector('[aria-label="Chat messages"], [data-testid="virtuoso-item-list"]')) {
     addCandidate(nestedMain);
   }
 
@@ -247,8 +250,8 @@ function scoreChatViewportCandidate(viewport) {
   if (rect.width < 140 || rect.height < 120) return Number.NEGATIVE_INFINITY;
 
   let score = 0;
-  if (viewport.matches('#main-content')) score += 8;
-  if (viewport.querySelector('[aria-label="Chat messages"]')) score += 24;
+  if (viewport.matches('#main-content, #root')) score += 8;
+  if (viewport.querySelector('[aria-label="Chat messages"], [data-testid="virtuoso-item-list"]')) score += 24;
   if (viewport.querySelector(USER_MESSAGE_BUBBLE_SELECTOR)) score += 8;
   if (viewport.querySelector(PROSE_CONTAINER_SELECTOR)) score += 6;
 
@@ -439,7 +442,7 @@ function startDomObserver() {
   if (!isPluginEnabled || state.streaming) return;
   if (!document.body) return;
 
-  const observeRoot = getActiveCenteredElement() || document.querySelector('#main-content') || document.body;
+  const observeRoot = getActiveCenteredElement() || document.querySelector('#root') || document.querySelector('#main-content') || document.body;
   if (!isConnectedElement(observeRoot)) return;
   if (state.domObserver && state.domObserverRoot === observeRoot) return;
   if (state.domObserver) {

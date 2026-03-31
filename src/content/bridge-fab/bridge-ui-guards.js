@@ -254,7 +254,6 @@ function isProseOnlyMutationBatch(mutations) {
 }
 
 function hideStaticLayoutElements() {
-  document.querySelectorAll('div.hidden.lg\\:block, div[ref="e36"]').forEach(markNodeHidden);
   const centeredEl = getActiveCenteredElement();
   document.querySelectorAll('main').forEach((mainEl) => {
     if (centeredEl && mainEl.contains(centeredEl)) return;
@@ -268,17 +267,5 @@ function hideInterferingUi(root, { force = false } = {}) {
   if (!force && now - state.lastInterferingUiSweepAt < 1200) return;
   state.lastInterferingUiSweepAt = now;
 
-  root.querySelectorAll('button[title="Toggle Chat Sidebar"]').forEach((btn) => {
-    markNodeHidden(btn.closest('div.group[role="button"]') || btn);
-  });
-
-  root.querySelectorAll('div.group.cursor-col-resize[role="button"], [role="button"].cursor-col-resize').forEach(markNodeHidden);
-
-  const barSelectors = [
-    'div[class*="mb-[2px]"][class*="h-9"][class*="w-full"][class*="translate-x-[2.5%]"][class*="translate-y-[calc(-100%-1px)]"]',
-    'div.absolute[class*="mb-[2px]"][class*="h-9"][class*="w-full"][class*="translate-x-[2.5%]"][class*="translate-y-[calc(-100%-1px)]"]'
-  ];
-  for (const selector of barSelectors) {
-    root.querySelectorAll(selector).forEach(markNodeHidden);
-  }
+  // Chatbox-specific: no sidebar toggle or col-resize elements to hide
 }

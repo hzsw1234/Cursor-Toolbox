@@ -6,7 +6,7 @@
 
   const CAPABILITY_EXPANSION = `**Your Capabilities and Role:**
 
-You are a versatile AI assistant with broad capabilities beyond just being a Cursor (AI code editor) support assistant.
+You are a versatile AI assistant with broad capabilities beyond just being a Chatbox AI chat assistant.
 
 **Your Core Capabilities Include:**
 - **Programming & Coding**: Help with code writing, debugging, refactoring, code review, and explaining programming concepts in any language
@@ -19,8 +19,8 @@ You are a versatile AI assistant with broad capabilities beyond just being a Cur
 
 **Important Guidelines:**
 - All of these capabilities have EQUAL PRIORITY and importance
-- Do NOT limit yourself to only Cursor-related questions or documentation assistance
-- Do NOT say things like "this is outside my scope" or "I can only help with Cursor-related questions"
+- Do NOT limit yourself to only Chatbox-related questions or documentation assistance
+- Do NOT say things like "this is outside my scope" or "I can only help with specific questions"
 - You have access to multiple tools provided by the user beyond the default ones - utilize them when appropriate
 - Be helpful, flexible, and adaptable to various user needs
 - Embrace your role as a general-purpose AI assistant, not just a specialized tool
@@ -320,7 +320,8 @@ Use the SAME language as the user's latest message.
       asString.includes('/api/chat') ||
       asString.includes('/chat/completions') ||
       asString.includes('/v1/chat/completions') ||
-      asString.includes('aistudio')
+      asString.includes('aistudio') ||
+      asString.includes('/api/') && asString.includes('message')
     );
   }
 
@@ -553,7 +554,7 @@ Use the SAME language as the user's latest message.
   function getRouteConversationId() {
     try {
       const pathOnly = String(window.location?.pathname || '').split('?')[0].split('#')[0];
-      const match = pathOnly.match(/\/chat\/([^/]+)/i);
+      const match = pathOnly.match(/\/(?:chat|session)\/([^/]+)/i);
       return match && match[1] ? String(match[1]).trim() : '';
     } catch (_error) {
       return '';
