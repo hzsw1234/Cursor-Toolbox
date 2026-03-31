@@ -33,7 +33,7 @@ function findLayoutTarget() {
     collectLayoutCandidatesFromAncestors(sendBtn, candidates);
   }
 
-  const toggleBtn = document.querySelector('button[title="Toggle Chat Sidebar"]');
+  const toggleBtn = document.querySelector('button[aria-label*="sidebar"], button[aria-label*="menu"]');
   if (toggleBtn) {
     collectLayoutCandidatesFromAncestors(toggleBtn, candidates);
   }
@@ -302,23 +302,16 @@ function ensureHeaderDisclaimer(rightArea) {
 }
 
 function ensureHeaderModifications() {
-  const header = document.querySelector('header.border-border.bg-background.sticky');
+  const header = document.querySelector('header, div.flex-none.title-bar, div[class*="title-bar"]');
   if (!header) return false;
 
-  markNodeHidden(header.querySelector('nav'));
-  markNodeHidden(header.querySelector('div.flex.justify-center.flex-1'));
-
-  const rightArea = header.querySelector('div[class*="justify-end"]');
+  const rightArea = header.querySelector('div[class*="justify-end"], div:last-child');
   if (rightArea) {
-    Array.from(rightArea.children).forEach((child) => {
-      if (child.id !== 'tm-header-disclaimer') {
-        markNodeHidden(child);
-      }
-    });
-    ensureHeaderDisclaimer(rightArea);
+    const existing = rightArea.querySelector('#tm-header-disclaimer');
+    if (!existing) {
+      ensureHeaderDisclaimer(rightArea);
+    }
   }
-
-  header.querySelectorAll('a[href*="dashboard"], button[aria-label="菜单"], button[aria-label="搜索"]').forEach(markNodeHidden);
 
   return true;
 }

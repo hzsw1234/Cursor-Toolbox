@@ -875,12 +875,7 @@
   box-sizing: border-box;
 }
 
-body.tm-toolbox-enabled div.group.cursor-col-resize[role="button"],
-body.tm-toolbox-enabled [role="button"].cursor-col-resize,
-body.tm-toolbox-enabled div[class*="mb-[2px]"][class*="h-9"][class*="w-full"][class*="translate-x-[2.5%]"][class*="translate-y-[calc(-100%-1px)]"] {
-  display: none !important;
-  pointer-events: none !important;
-}
+/* Chatbox: no cursor-col-resize or floating bar elements to hide */
 
 @media (prefers-color-scheme: dark) {
   #tm-shell-menu-toggle {

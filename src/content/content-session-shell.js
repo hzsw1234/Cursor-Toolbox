@@ -2978,7 +2978,7 @@ function syncSessionHistoryFromDom() {
   if (!state.sessionsLoaded) return;
   if (state.streaming) return;
 
-  const root = getActiveCenteredElement() || state.shellStage || document.querySelector('#main-content') || document.body;
+  const root = getActiveCenteredElement() || state.shellStage || document.querySelector('#root') || document.querySelector('#main-content') || document.body;
   if (!root) return;
 
   const entries = collectConversationEntries(root);
@@ -3122,7 +3122,7 @@ function loadSessionStore() {
 }
 
 function updateShellTopOffset() {
-  const header = document.querySelector('header.border-border.bg-background.sticky');
+  const header = document.querySelector('header, div.flex-none.title-bar, div[class*="title-bar"], header.border-border.bg-background.sticky');
   const fallback = 48;
   let topOffset = fallback;
 
